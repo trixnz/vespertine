@@ -15,6 +15,9 @@
 
 #include <glm/gtc/noise.hpp>
 
+#include <bgfxplatform.h>
+#include <bgfx.h>
+
 #include <d3d11.h>
 
 namespace vesp { namespace graphics {
@@ -42,18 +45,21 @@ namespace vesp { namespace graphics {
 
 	Engine::~Engine()
 	{
+		/*
 		this->DestroyRenderTargets();
 		this->DestroyDepthStencil();
 
 		ImmediateContext->Release();
 		SwapChain->Release();
 		Device->Release();
+		*/
 	}
 	
 	void Engine::Initialize()
 	{
 		auto size = this->window_->GetSize();
 
+		/*
 		this->CreateDevice(size);
 		this->CreateDepthStencil(size);
 		this->CreateRenderTargets(size);
@@ -64,10 +70,20 @@ namespace vesp { namespace graphics {
 			Vec3(0.0f, 2.0f, -4.0f), 
 			Quat(Vec3(0.0f, 0.0f, 0.0f))
 		);
+		*/
+
+		bgfx::winSetHwnd(static_cast<HWND>(this->window_->GetSystemRepresentation()));
+		bgfx::init(bgfx::RendererType::Direct3D11);
+		bgfx::reset(size.x, size.y, BGFX_RESET_NONE);
+		bgfx::setDebug(BGFX_DEBUG_TEXT);
+		bgfx::setViewClear(0, BGFX_CLEAR_COLOR|BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+
+		this->HandleResize(size);
 	}
 
 	void Engine::HandleResize(IVec2 size)
 	{
+		/*
 		this->DestroyRenderTargets();
 		this->DestroyDepthStencil();
 
@@ -75,14 +91,15 @@ namespace vesp { namespace graphics {
 
 		this->CreateDepthStencil(size);
 		this->CreateRenderTargets(size);
-
+		*/
 		LogInfo("Resized to (%d, %d)", size.x, size.y);
+		bgfx::setViewRect(0, 0, 0, size.x, size.y);
 	}
 
 	void Engine::Pulse()
 	{
 		this->window_->Pulse();
-
+		/*
 		F32 clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		for (auto& rt : this->renderTargetViews_)
 			ImmediateContext->ClearRenderTargetView(rt, clearColour);
@@ -141,6 +158,12 @@ namespace vesp { namespace graphics {
 		this->SetDepthEnabled(true);
 		
 		SwapChain->Present(0, 0);
+		*/
+
+		bgfx::dbgTextClear();
+		bgfx::dbgTextPrintf(0, 0, 0x4f, "bgfx render backend test");
+		bgfx::dbgTextPrintf(0, 1, 0x4f, bgfx::getRendererName(bgfx::getRendererType()));
+		bgfx::frame();
 
 		this->frameCount_++;
 		if (this->fpsTimer_.GetSeconds() > 5)

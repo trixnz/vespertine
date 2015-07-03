@@ -1,0 +1,6 @@
+[submodule "vendor/bgfx"]
+	path = vendor/bgfx
+	url = git@github.com:bkaradzic/bgfx.git
+[submodule "vendor/bx"]
+	path = vendor/bx
+	url = git@github.com:bkaradzic/bx.git
